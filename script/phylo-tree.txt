@@ -1,0 +1,62 @@
+# Script for generating phylogenetic tree in iTOL 
+
+# PART 1: QIIME2
+# Activate qiime2
+
+# Export the taxonomy data
+qiime tools export --input-path taxonomy.qza --output-path <path-to-export-taxonomy>
+
+# Export the ASV counts table
+qiime tools export --input-path table.qza --output-path <path-to-export-counts-table>
+
+# Open both feature-table and taxonomy files in Excel. Merge taxonomy with feature-table and save in a single .tsv file.
+# IMPORTANT: Make sure that the ASV/OTU IDs are included.
+
+
+# PART 2: R
+# At this point, we will migrate to R to filter out the Top 100 genus
+
+# Load necessary library
+library(dplyr)
+
+# Load the merged file
+merged_data <- read.table("<path-to-merged-file>", header=TRUE, sep=""\t"", check.names = FALSE)
+
+# Sum abundances at the genus level. Rename the column header for the OTU # to ‘Feature_ID’. 
+# Replace <sample-name-column-start> and <sample-name-column-end> with the appropriate column names for your sample range.
+genus_abundances <- merged_data %>%
+  group_by(Taxon) %>%
+  summarise(Feature_ID = first(Feature_ID),
+  across(starts_with("<sample-name-column-start>"):ends_with("<sample-name-column-end>"), sum))
+
+# Calculate total across sample columns (excluding Taxon and Feature_ID columns)
+genus_abundances$total <- rowSums(genus_abundances[,-c(1,2)], na.rm = TRUE)
+
+# Select the top 100 genera based on the total
+top_100_genera <- genus_abundances %>%
+  arrange(desc(total)) %>%
+  slice(1:100)
+
+# Save ASV IDs to file for filtering
+write.table(top_100_genera, "<output-top-100-file>", sep=""\t"", row.names=FALSE, quote=FALSE)
+
+# IMPORTANT: Inspect the saved file. Rename Feature_ID to ‘#OTU ID’ and place this column in the first column
+
+
+# PART 3: QIIME2
+# Migrate back to the QIIME2 terminal
+
+# Filter ASV counts table using the top 100 ASVs of the '<path-to-top-100-file>'
+qiime feature-table filter-features --i-table table.qza --m-metadata-file <path-to-top-100-file> --o-filtered-table filtered-table.qza
+
+# Filter representative sequences of the 'rep-seqs.qza' file
+qiime feature-table filter-seqs --i-data rep-seqs.qza --i-table filtered-table.qza --o-filtered-data filtered-rep-seqs.qza
+
+# Build the phylogenetic tree
+qiime phylogeny align-to-tree-mafft-fasttree --i-sequences filtered-rep-seqs.qza --o-alignment aligned-seqs.qza --o-masked-alignment masked-aligned-seqs.qza --o-tree unrooted-tree.qza --o-rooted-tree rooted-tree.qza
+
+# Export the phylogenetic tree for iTOL. We’ll use the rooted tree output here
+qiime tools export --input-path rooted-tree.qza --output-path <output-directory>
+
+# Upload the .nwk file to iTOL here: https://itol.embl.de/
+# Annotate tree accordingly
