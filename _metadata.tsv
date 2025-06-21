@@ -1,0 +1,16 @@
+ sample-id	treatment	setup	pH	Eh	TOC	Cu	TN	P	K
+BLK	blank	blank	0	0	0	0	0	0	0
+BUF	baseline control	baseline control	6.73	28.33	0.18	1243.67	0.12	6.42	0.71
+CIT	baseline control	baseline control	2.91	241	0.01	1301.67	0.01	2.11	0.28
+RANO1	citrate	with electrokinetics	3.44	205.67	0.12	655	0.0062	2.2294	0.541876
+RANO2	citrate	without electrokinetics	4.94	-70.67	0.14	1130	0.0047	0.6007	0.545442
+RANO3	buffer	with electrokinetics	5.74	-37	0.14	1268	0.0055	0.4893	0.5223
+RANO4	buffer	without electrokinetics	4.06	124.67	0.12	757	0.0047	5.0933	0.553006
+RCAT1	citrate	with electrokinetics	3.43	198	0.14	706	0.004	1.9547	0.5416
+RCAT2	citrate	without electrokinetics	6.18	-86	0.1	1210	0.0047	0.9898	0.601432
+RCAT3	buffer	with electrokinetics	5.42	-10	0.12	1288	0.004	1.9174	0.501879
+RCAT4	buffer	without electrokinetics	3.19	137.33	0.12	786	0.0033	2.1474	0.472317
+RMID1	citrate	with electrokinetics	2.8	195	0.14	713	0.0047	2.5896	0.57745
+RMID2	citrate	without electrokinetics	4.96	-120.67	0.12	1223	0.0047	0.6554	0.552174
+RMID3	buffer	with electrokinetics	5.73	-4.67	0.16	1356	0.0062	0.4787	0.607008
+RMID4	buffer	without electrokinetics	3.99	143	0.14	752	0.0055	3.0654	0.430222
